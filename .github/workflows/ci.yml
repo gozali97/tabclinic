@@ -1,0 +1,64 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci-password
+          POSTGRES_DB: real_clinic
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+      - name: CI .env (synthetic data only)
+        run: |
+          cat > .env <<'EOF'
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_USER=ci
+          DB_PASSWORD=ci-password
+          DB_NAME=real_clinic
+          AUTO_MIGRATE=true
+          SEED_ENABLED=true
+          SEED_PASSWORD=ci-seed-password
+          SERVER_PORT=8071
+          EOF
+      - run: test -z "$(gofmt -l internal cmd pkg migrations)"
+      - run: go vet ./...
+      - run: go test ./...
+      - name: migrate from empty + seed
+        run: go run ./cmd/seed
+      # run_all.sh runs smoke_auth, smoke_flow, smoke_isolation (last) and fails on any
+      # unmet "(want X)" line or reported leak.
+      - name: smoke
+        run: bash test/run_all.sh
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit -p .
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high

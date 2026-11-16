@@ -1,0 +1,113 @@
+/* Design system: AdminMart layout on Tailwind CSS v4, with a solid clinical palette
+   (navy-blue primary, slate neutrals; no purple/pink, no gradients).
+   Every solid tone below keeps >= 4.5:1 contrast with white text, except warning/light (dark text). */
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Rubik", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  --color-primary: #1e5aa8;
+  --color-primary-dark: #174785;
+  --color-primary-soft: #e7eef8;
+  --color-success: #15803d;
+  --color-success-dark: #116632;
+  --color-danger: #c53030;
+  --color-danger-dark: #a32626;
+  --color-warning: #f2a516;
+  --color-warning-dark: #d98e07;
+  --color-info: #0369a1;
+  --color-cyan: #0e7490;
+  --color-cyan-dark: #0b5d73;
+  --color-orange: #c2410c;
+  --color-dark: #0f172a;
+  --color-secondary: #475569;
+  --color-secondary-dark: #334155;
+  --color-light: #e2e8f0;
+  --color-light-dark: #cbd5e1;
+
+  --color-body: #334155;
+  --color-muted: #64748b;
+  --color-heading: #0f172a;
+  --color-input: #1e293b;
+  --color-breadcrumb: #64748b;
+  /* Blue sidebar. Contrast on --color-sidebar-bg: text 7.3:1, icon 5.7:1, group label 4.7:1. */
+  --color-sidebar-bg: #174785;
+  --color-sidebar: #dbe6f5;
+  --color-sidebar-icon: #b9cde9;
+  --color-sidebar-label: #9fbbe0;
+
+  --color-page: #f1f5f9;
+  --color-line: #e2e8f0;
+  --color-line-input: #cbd5e1;
+  --color-line-table: #e2e8f0;
+  --color-stripe: #f8fafc;
+
+  --shadow-card: 0 1px 2px 0 rgba(15, 23, 42, 0.06), 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+  --shadow-soft: 0 1px 2px 0 rgba(15, 23, 42, 0.08);
+  --shadow-dropdown: 0 8px 24px rgba(15, 23, 42, 0.12);
+  --shadow-nav: none;
+  --shadow-brand: none;
+}
+
+/* Kept as a utility name so existing markup works; now a solid fill, not a gradient. */
+@utility bg-nav-active {
+  background-color: var(--color-primary);
+}
+
+@layer base {
+  body {
+    @apply bg-page font-sans text-base leading-normal text-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  h1 { font-size: 36px; }
+  h2 { font-size: 30px; }
+  h3 { font-size: 21px; }
+  h4 { font-size: 18px; }
+  h5 { font-size: 16px; }
+  h6 { font-size: 14px; }
+  b, strong { font-weight: 500; }
+  a { color: var(--color-primary); }
+  a:hover { color: var(--color-primary-dark); }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .mono {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+  }
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 8px;
+    z-index: 1000;
+    padding: 8px 16px;
+    border-radius: 2px;
+    background: var(--color-primary);
+    color: #fff;
+  }
+  .skip-link:focus {
+    left: 16px;
+  }
+}
+
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area { position: absolute; inset: 0; }
+  .no-print { display: none !important; }
+  dialog::backdrop { background: transparent; }
+}

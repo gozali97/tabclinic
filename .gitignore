@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+backend/tmp/
+backend/data/
+backend/api
+frontend/node_modules/
+frontend/dist/
